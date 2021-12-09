@@ -1,0 +1,5 @@
+1> make sure install plugin "ssh"
+2> save kay-pair in credential with option "SSH Username with private key"
+3> goto: manage jenkins-> configure system -> ssh remote host
+    put ip address as hostname
+4> now goto project configuration and under build section select " Exicute shell script on remote host using ssh"
