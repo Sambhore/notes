@@ -1,2 +1,25 @@
 * Jenkins plug in to connect remote server and run command and scripts
   1. SSH2 easy
+### importing username & password in groovi script #######
+
+ withCredentials([usernamePassword(credentialsId: 'uat-cp', passwordVariable: 'passwd', usernameVariable: 'uname')]) {
+            sh """ curl -sSf -u "$uname:$passwd" -O 'https://artifactory.godrejhf.com/artifactory/uat-cp/CustomerPortal.zip' """
+         }
+         
+         
+##### uploading artifact in jfrog artifactory ###########
+
+def server = Artifactory.newServer url: 'https://artifactory.godrejhf.com/artifactory', credentialsId: 'uat-cp'
+    def uploadSpec = """{
+     "files": [
+    {
+      "pattern": "CustomerPortal.zip",
+      "target": "uat-cp"
+    }
+    ]
+    }"""
+stage ('Uploading to Artifactory') {
+        server.upload(uploadSpec)
+    }
+    
+ ###
