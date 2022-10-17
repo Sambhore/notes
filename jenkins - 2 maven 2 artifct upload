@@ -1,0 +1,69 @@
+node {
+    def server = Artifactory.newServer url: 'http://ec2-18-217-253-46.us-east-2.compute.amazonaws.com:8082/artifactory/', credentialsId: 'artifactory-devops'
+    def uploadSpec = """{
+     "files": [
+    {
+      "pattern": "*.jar",
+      "target": "project1/"
+    }
+    ]
+
+    }"""
+    
+    def uploadSpec1 = """{
+     "files": [
+    {
+      "pattern": "*.jar",
+      "target": "project2/"
+    }
+    ]
+
+    }"""
+
+        stage('Git import for project1') {
+            
+                sh 'mkdir -p project1' 
+               git branch: 'main', changelog: false, poll: false, url: 'https://github.com/Sambhore/new-java-webapp.git'
+               sh 'ls -l'
+            
+        }
+        stage('maven build for project1') {
+            
+               // sh 'cd project1'
+                sh 'mvn clean install'
+                sh 'ls -l project1'
+                //sh 'cd target'
+                sh 'mv target/*.jar project1'
+                sh 'ls -l project1'
+            
+        }
+        
+        stage('Upload Artifact for project1') { 
+        
+        server.upload(uploadSpec)
+    }
+        
+        stage('Git import for project2') {
+           
+                sh 'mkdir -p project2' 
+               git branch: 'main', changelog: false, poll: false, url: 'https://github.com/Sambhore/HelloWorldMaven.git'
+               sh 'ls -l'
+            
+        }
+        
+        stage('maven build for project2') {
+            
+                //sh 'cd project2'
+                sh 'mvn clean install'
+                sh 'ls -l project2'
+                //sh 'cd target'
+                sh 'mv target/*jar project2'
+                sh 'ls -l project2'
+            
+        }
+        
+        stage('Upload Artifact for project2') { 
+        
+        server.upload(uploadSpec1)
+    }
+    }
